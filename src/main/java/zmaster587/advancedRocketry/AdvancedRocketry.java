@@ -81,6 +81,7 @@ import zmaster587.advancedRocketry.item.components.ItemUpgrade;
 import zmaster587.advancedRocketry.item.tools.ItemBasicLaserGun;
 import zmaster587.advancedRocketry.mission.MissionGasCollection;
 import zmaster587.advancedRocketry.mission.MissionOreMining;
+import zmaster587.advancedRocketry.mission.MissionDataCollection;
 import zmaster587.advancedRocketry.network.*;
 import zmaster587.advancedRocketry.satellite.*;
 import zmaster587.advancedRocketry.stations.SpaceStationObject;
@@ -334,6 +335,7 @@ public class AdvancedRocketry {
 		SatelliteRegistry.registerSatellite("mass", SatelliteMassScanner.class);
 		SatelliteRegistry.registerSatellite("asteroidMiner", MissionOreMining.class);
 		SatelliteRegistry.registerSatellite("gasMining", MissionGasCollection.class);
+		SatelliteRegistry.registerSatellite("dataCollection", MissionDataCollection.class);
 		SatelliteRegistry.registerSatellite("solarEnergy", SatelliteMicrowaveEnergy.class);
 		SatelliteRegistry.registerSatellite("oreScanner", SatelliteOreMapping.class);
 		SatelliteRegistry.registerSatellite("biomeChanger", SatelliteBiomeChanger.class);
@@ -370,6 +372,7 @@ public class AdvancedRocketry {
 		GameRegistry.registerTileEntity(TileSatelliteTerminal.class, "ARTileEntitySatelliteControlCenter");
 		GameRegistry.registerTileEntity(TileAstrobodyDataProcessor.class, "ARplanetAnalyser");
 		GameRegistry.registerTileEntity(TileGuidanceComputer.class, "ARguidanceComputer");
+		GameRegistry.registerTileEntity(TileDataIntake.class, "ARdataintake");
 		GameRegistry.registerTileEntity(TileElectricArcFurnace.class, "ARelectricArcFurnace");
 		GameRegistry.registerTileEntity(TilePlanetSelector.class, "ARTilePlanetSelector");
 		//GameRegistry.registerTileEntity(TileModelRenderRotatable.class, "ARTileModelRenderRotatable");
@@ -533,7 +536,10 @@ public class AdvancedRocketry {
 		SatelliteRegistry.registerSatelliteProperty(new ItemStack(LibVulpesItems.itemBattery, 1, 0), new SatelliteProperties().setPowerStorage(10000));
 		SatelliteRegistry.registerSatelliteProperty(new ItemStack(LibVulpesItems.itemBattery, 1, 1), new SatelliteProperties().setPowerStorage(40000));
 		SatelliteRegistry.registerSatelliteProperty(new ItemStack(AdvancedRocketryItems.itemDataUnit, 1, 0), new SatelliteProperties().setMaxData(1000));
-
+		// Register satellites for the summonSatellites command
+		WorldCommand.registerSummonableSatellite("distance", new SatelliteProperties(120, 720, SatelliteRegistry.getKey(SatelliteOptical.class), 3000));
+		WorldCommand.registerSummonableSatellite("mass", new SatelliteProperties(120, 720, SatelliteRegistry.getKey(SatelliteMassScanner.class), 3000));
+		WorldCommand.registerSummonableSatellite("composition", new SatelliteProperties(120, 720, SatelliteRegistry.getKey(SatelliteComposition.class), 3000));
 
 		//Item Registration
 		//Circuit pieces
@@ -668,6 +674,7 @@ public class AdvancedRocketry {
 		AdvancedRocketryBlocks.blockNuclearFuelTank = new BlockNuclearFuelTank(Material.IRON).setUnlocalizedName("nuclearfueltank").setCreativeTab(tabAdvRocketry).setHardness(2f);
 		AdvancedRocketryBlocks.blockNuclearCore = new BlockNuclearCore(Material.IRON).setUnlocalizedName("nuclearcore").setCreativeTab(tabAdvRocketry).setHardness(2f);
 		AdvancedRocketryBlocks.blockGuidanceComputer = new BlockTile(TileGuidanceComputer.class,GuiHandler.guiId.MODULAR.ordinal()).setUnlocalizedName("guidanceComputer").setCreativeTab(tabAdvRocketry).setHardness(3f);
+		AdvancedRocketryBlocks.blockDataIntake = new BlockTile(TileDataIntake.class,GuiHandler.guiId.MODULAR.ordinal()).setUnlocalizedName("dataIntake").setCreativeTab(tabAdvRocketry).setHardness(3f);
 		AdvancedRocketryBlocks.blockIntake = new BlockIntake(Material.IRON).setUnlocalizedName("gasIntake").setCreativeTab(tabAdvRocketry).setHardness(3f);
 		AdvancedRocketryBlocks.blockDrill = new BlockMiningDrill().setUnlocalizedName("drill").setCreativeTab(tabAdvRocketry).setHardness(3f);
 		AdvancedRocketryBlocks.blockLandingFloat = new Block(Material.IRON).setUnlocalizedName("landingfloat").setCreativeTab(tabAdvRocketry).setHardness(1).setResistance(1f);
@@ -838,6 +845,7 @@ public class AdvancedRocketry {
 		LibVulpesBlocks.registerBlock(AdvancedRocketryBlocks.blockNuclearFuelTank.setRegistryName("nuclearfueltank"));
 		LibVulpesBlocks.registerBlock(AdvancedRocketryBlocks.blockNuclearCore.setRegistryName("nuclearcore"));
 		LibVulpesBlocks.registerBlock(AdvancedRocketryBlocks.blockGuidanceComputer.setRegistryName("guidanceComputer"));
+		LibVulpesBlocks.registerBlock(AdvancedRocketryBlocks.blockDataIntake.setRegistryName("dataIntake"));
 		LibVulpesBlocks.registerBlock(AdvancedRocketryBlocks.blockIntake.setRegistryName("intake"));
 		LibVulpesBlocks.registerBlock(AdvancedRocketryBlocks.blockDrill.setRegistryName("drill"));
 		LibVulpesBlocks.registerBlock(AdvancedRocketryBlocks.blockLandingFloat.setRegistryName("landingfloat"));

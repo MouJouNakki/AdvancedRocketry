@@ -32,6 +32,8 @@ public class BlockARHatch extends BlockHatch {
 		list.add(new ItemStack(this, 1, 4));
 		list.add(new ItemStack(this, 1, 5));
 		list.add(new ItemStack(this, 1, 6));
+		list.add(new ItemStack(this, 1, 7));
+		list.add(new ItemStack(this, 1, 8));
 	}
 	
 	@Override
@@ -40,7 +42,7 @@ public class BlockARHatch extends BlockHatch {
 
 
 		boolean isPointer = blockAccess.getTileEntity(pos.offset(direction.getOpposite())) instanceof TilePointer;
-		if (blockState.getValue(VARIANT) == 8)
+		if (blockState.getValue(VARIANT) == 10)
 			return false;
 		if(isPointer || blockState.getValue(VARIANT) < 2)
 			return super.shouldSideBeRendered(blockState, blockAccess, pos, direction);
@@ -59,12 +61,12 @@ public class BlockARHatch extends BlockHatch {
 	
 	public void setRedstoneState(World world, IBlockState bstate , BlockPos pos, boolean state) {
 		if(bstate.getBlock() == this) {
-			if(state && (bstate.getValue(VARIANT) & 8) == 0) {
-				world.setBlockState(pos, bstate.withProperty(VARIANT, bstate.getValue(VARIANT) | 8));
+			if(state && (bstate.getValue(VARIANT) & 10) == 0) {
+				world.setBlockState(pos, bstate.withProperty(VARIANT, bstate.getValue(VARIANT) | 10));
 				world.notifyBlockUpdate(pos, bstate,  bstate, 3);
 			}
-			else if(!state && (bstate.getValue(VARIANT) & 8) != 0) {
-				world.setBlockState(pos, bstate.withProperty(VARIANT, bstate.getValue(VARIANT) & 7));
+			else if(!state && (bstate.getValue(VARIANT) & 10) != 0) {
+				world.setBlockState(pos, bstate.withProperty(VARIANT, bstate.getValue(VARIANT) & 9));
 				world.notifyBlockUpdate(pos, bstate,  bstate, 3);
 			}
 		}
@@ -72,7 +74,7 @@ public class BlockARHatch extends BlockHatch {
 	
 	@Override
 	public boolean canProvidePower(IBlockState state) {
-		return state.getValue(VARIANT) >= 10;
+		return state.getValue(VARIANT) >= 12;
 	}
 	
 	@Override
@@ -80,20 +82,24 @@ public class BlockARHatch extends BlockHatch {
 		int metadata = state.getValue(VARIANT);
 		
 		//TODO: multiple sized Hatches
-		if((metadata & 7) == 0)
+		if((metadata & 9) == 0)
 			return new TileDataBus(2);
-		else if((metadata & 7) == 1)
+		else if((metadata & 9) == 1)
 			return new TileSatelliteHatch(1);	
-		else if((metadata & 7) == 2)
+		else if((metadata & 9) == 2)
 			return new TileRocketUnloader(4);
-		else if((metadata & 7) == 3)
+		else if((metadata & 9) == 3)
 			return new TileRocketLoader(4);
-		else if((metadata & 7) == 4)
+		else if((metadata & 9) == 4)
 			return new TileRocketFluidUnloader();
-		else if((metadata & 7) == 5)
+		else if((metadata & 9) == 5)
 			return new TileRocketFluidLoader();
-		else if((metadata & 7) == 6)
+		else if((metadata & 9) == 6)
 			return new TileGuidanceComputerAccessHatch();
+		else if((metadata & 9) == 7)
+			return new TileRocketDataUnloader(2);
+		else if((metadata & 9) == 8)
+			return new TileRocketDataLoader(2);
 		
 		return null;
 	}

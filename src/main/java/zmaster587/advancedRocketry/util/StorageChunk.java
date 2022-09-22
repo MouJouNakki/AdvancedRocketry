@@ -37,6 +37,7 @@ import zmaster587.advancedRocketry.api.EntityRocketBase;
 import zmaster587.advancedRocketry.api.satellite.SatelliteBase;
 import zmaster587.advancedRocketry.api.stations.IStorageChunk;
 import zmaster587.advancedRocketry.tile.TileGuidanceComputer;
+import zmaster587.advancedRocketry.tile.hatch.TileDataBus;
 import zmaster587.advancedRocketry.tile.hatch.TileSatelliteHatch;
 import zmaster587.advancedRocketry.world.util.WorldDummy;
 import zmaster587.libVulpes.util.HashedBlockPosition;
@@ -63,6 +64,7 @@ public class StorageChunk implements IBlockAccess, IStorageChunk {
 	//To store inventories (All inventories)
 	private ArrayList<TileEntity> inventoryTiles;
 	private ArrayList<TileEntity> liquidTiles;
+	private ArrayList<TileEntity> dataTiles;
 
 	public WorldDummy world;
 	private Entity entity;
@@ -75,6 +77,7 @@ public class StorageChunk implements IBlockAccess, IStorageChunk {
 		tileEntities = new ArrayList<>();
 		inventoryTiles = new ArrayList<>();
 		liquidTiles = new ArrayList<>();
+		dataTiles = new ArrayList<>();
 
 		world = new WorldDummy(AdvancedRocketry.proxy.getProfiler(), this);
 		world.init();
@@ -92,6 +95,7 @@ public class StorageChunk implements IBlockAccess, IStorageChunk {
 		tileEntities = new ArrayList<>();
 		inventoryTiles = new ArrayList<>();
 		liquidTiles = new ArrayList<>();
+		dataTiles = new ArrayList<>();
 
 		world = new WorldDummy(AdvancedRocketry.proxy.getProfiler(), this);
 		world.init();
@@ -129,6 +133,10 @@ public class StorageChunk implements IBlockAccess, IStorageChunk {
 
 	public List<TileEntity> getInventoryTiles() {
 		return inventoryTiles;
+	}
+	
+	public List<TileDataBus> getDataTiles() {
+		return dataTiles;
 	}
 
 	public List<TileEntity> getGUITiles() {
@@ -345,6 +353,10 @@ public class StorageChunk implements IBlockAccess, IStorageChunk {
 	private static boolean isLiquidContainerBlock(TileEntity tile) {
 		return tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
 	}
+	
+	private static boolean isDataContainerBlock(TileEntity tile) {
+		return tile instanceof TileDataBus;
+	}
 
 	public void readFromNBT(NBTTagCompound nbt) {
 		sizeX = nbt.getInteger("xSize");
@@ -387,6 +399,10 @@ public class StorageChunk implements IBlockAccess, IStorageChunk {
 
 				if(isLiquidContainerBlock(tile)) {
 					liquidTiles.add(tile);
+				}
+				
+				if(isDataContainerBlock(tile)) {
+					dataTiles.add(tile);
 				}
 
 				tileEntities.add(tile);
@@ -510,6 +526,10 @@ public class StorageChunk implements IBlockAccess, IStorageChunk {
 
 							if(isLiquidContainerBlock(newTile)) {
 								ret.liquidTiles.add(newTile);
+							}
+							
+							if(isDataContainerBlock(newTile)) {
+								ret.dataTiles.add(newTile);
 							}
 
 							ret.tileEntities.add(newTile);

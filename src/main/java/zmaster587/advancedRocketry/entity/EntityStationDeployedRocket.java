@@ -24,6 +24,7 @@ import zmaster587.advancedRocketry.api.IInfrastructure;
 import zmaster587.advancedRocketry.api.RocketEvent;
 import zmaster587.advancedRocketry.api.RocketEvent.RocketLaunchEvent;
 import zmaster587.advancedRocketry.api.RocketEvent.RocketPreLaunchEvent;
+import zmaster587.advancedRocketry.api.SatelliteRegistry;
 import zmaster587.advancedRocketry.api.StatsRocket;
 import zmaster587.advancedRocketry.api.atmosphere.AtmosphereRegister;
 import zmaster587.advancedRocketry.api.stations.ISpaceObject;
@@ -32,9 +33,15 @@ import zmaster587.advancedRocketry.dimension.DimensionManager;
 import zmaster587.advancedRocketry.dimension.DimensionProperties;
 import zmaster587.advancedRocketry.mission.MissionGasCollection;
 import zmaster587.advancedRocketry.network.PacketSatellite;
+import zmaster587.advancedRocketry.satellite.SatelliteData;
 import zmaster587.advancedRocketry.stations.SpaceObjectManager;
 import zmaster587.advancedRocketry.util.AudioRegistry;
+import zmaster587.advancedRocketry.util.PlanetaryTravelHelper;
 import zmaster587.advancedRocketry.util.StorageChunk;
+import zmaster587.advancedRocketry.mission.MissionResourceCollection;
+import zmaster587.advancedRocketry.mission.MissionDataCollection;
+import zmaster587.advancedRocketry.tile.TileDataIntake;
+import zmaster587.advancedRocketry.api.satellite.SatelliteBase;
 import zmaster587.libVulpes.LibVulpes;
 import zmaster587.libVulpes.inventory.modules.ModuleBase;
 import zmaster587.libVulpes.inventory.modules.ModuleButton;
@@ -47,6 +54,7 @@ import zmaster587.libVulpes.util.Vector3F;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 
 public class EntityStationDeployedRocket extends EntityRocket {
 
@@ -293,7 +301,7 @@ public class EntityStationDeployedRocket extends EntityRocket {
 
 
 		DimensionProperties props = DimensionManager.getEffectiveDimId(world, this.getPosition());
-		if(props.isGasGiant()) {
+		if(props.isGasGiant() && (Integer)stats.getStatTag("intakePower") > 0) {
 			try {
 				atmText.setText(props.getHarvestableGasses().get(gasId).getLocalizedName(new FluidStack(props.getHarvestableGasses().get(gasId), 1)));
 			} catch (IndexOutOfBoundsException e) {
@@ -301,6 +309,9 @@ public class EntityStationDeployedRocket extends EntityRocket {
 				atmText.setText(props.getHarvestableGasses().get(gasId).getLocalizedName(new FluidStack(props.getHarvestableGasses().get(gasId), 1)));
 			}
 		}
+		else if((Integer)stats.getStatTag("dataIntakePower") > 0) {
+			atmText.setText(LibVulpes.proxy.getLocalizedString("msg.entityDeployedRocket.collectData"));
+		}	
 		else {
 			atmText.setText(LibVulpes.proxy.getLocalizedString("msg.entityDeployedRocket.notGasGiant"));
 		}
@@ -359,7 +370,11 @@ public class EntityStationDeployedRocket extends EntityRocket {
 		//Check again to make sure we are around a gas giant
 		ISpaceObject spaceObj;
 		setInOrbit(true);
-		if( world.provider.getDimension() == ARConfiguration.getCurrentConfig().spaceDimId && ((spaceObj = SpaceObjectManager.getSpaceManager().getSpaceStationFromBlockCoords(this.getPosition())) != null && spaceObj.getProperties().getParentProperties().isGasGiant() )) { //Abort if destination is invalid
+		if(world.provider.getDimension() != ARConfiguration.getCurrentConfig().spaceDimId || ((spaceObj = SpaceObjectManager.getSpaceManager().getSpaceStationFromBlockCoords(this.getPosition())) == null)) {
+			setInOrbit(true);
+			return;
+		}
+		if((Integer)stats.getStatTag("canCollectData") > 0 || spaceObj.getProperties().getParentProperties().isGasGiant()) { //Abort if destination is invalid
 			this.setPosition(forwardDirection.getFrontOffsetX()*64d + this.launchLocation.x + (storage.getSizeX() % 2 == 0 ? 0 : 0.5d), posY, forwardDirection.getFrontOffsetZ()*64d + this.launchLocation.z + (storage.getSizeZ() % 2 == 0 ? 0 : 0.5d));	
 		}
 		else {
@@ -370,17 +385,43 @@ public class EntityStationDeployedRocket extends EntityRocket {
 
 		DimensionProperties properties = (DimensionProperties)spaceObj.getProperties().getParentProperties();
 		
-		//Make sure gas id is valid, or abort
-		if(gasId >= properties.getHarvestableGasses().size() || gasId < 0)
+		MissionResourceCollection miningMission;
+		if((Integer)stats.getStatTag("intakePower") > 0)
 		{
-			setInOrbit(true);
-			return;
+			//Make sure gas id is valid, or abort
+			if(gasId >= properties.getHarvestableGasses().size() || gasId < 0)
+			{
+				setInOrbit(true);
+				return;
+			}
+			//one intake with a 1 bucket tank should take 100 seconds
+			float intakePower = (Integer)stats.getStatTag("intakePower");
+			
+			miningMission = new MissionGasCollection((long)(2*((int)stats.getStatTag("liquidCapacity")/intakePower)), this, connectedInfrastructure, properties.getHarvestableGasses().get(gasId));
 		}
-		
-		//one intake with a 1 bucket tank should take 100 seconds
-		float intakePower = (Integer)stats.getStatTag("intakePower");
-		
-		MissionGasCollection miningMission = new MissionGasCollection(intakePower == 0 ? 360 : (long)(2*((int)stats.getStatTag("liquidCapacity")/intakePower)), this, connectedInfrastructure, properties.getHarvestableGasses().get(gasId));
+		else if((Integer)stats.getStatTag("canCollectData") > 0)
+		{
+			//one data intake should take 100 seconds
+			ArrayList<SatelliteData> satellites = new ArrayList<SatelliteData>();
+			int time = 0;
+			for(TileEntity intake : storage.getInventoryTiles())
+			{
+				if(!(intake instanceof TileDataIntake))
+					continue;
+				intake = (TileDataIntake)intake;
+				if(intake.inventory.getStackInSlot(0).isEmpty())
+					continue;
+				SatelliteBase satellite = SatelliteRegistry.getSatellite(intake.inventory.getStackInSlot(0));
+				if(!(satellite instanceof SatelliteData))
+					continue;
+				if(!PlanetaryTravelHelper.isTravelAnywhereInPlanetarySystem(satellite.getDimensionId(), spaceObj.getOrbitingPlanetId()))
+					continue;
+				time += 2000;
+				satellites.add((SatelliteData)satellite);
+			}
+			
+			miningMission = new MissionDataCollection((long)(time), this, connectedInfrastructure, satellites);
+		}
 
 		miningMission.setDimensionId(properties.getId());
 		properties.addSatellite(miningMission);

@@ -252,6 +252,10 @@ public class TileUnmannedVehicleAssembler extends TileRocketAssemblingMachine {
 							if(block instanceof IIntake) {
 								stats.setStatTag("intakePower", (int)stats.getStatTag("intakePower") + ((IIntake)block).getIntakeAmt(state));
 							}
+							
+							if(block instanceof IDataIntake) {
+								stats.setStatTag("canCollectData", 1);
+							}
 
 							TileEntity tile= world.getTileEntity(currPos);
                             IFluidHandler handler;
