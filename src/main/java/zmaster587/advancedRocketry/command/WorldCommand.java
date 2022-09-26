@@ -20,12 +20,10 @@ import net.minecraftforge.common.MinecraftForge;
 import zmaster587.advancedRocketry.AdvancedRocketry;
 import zmaster587.advancedRocketry.api.AdvancedRocketryAPI;
 import zmaster587.advancedRocketry.api.AdvancedRocketryItems;
-import zmaster587.advancedRocketry.api.SatelliteRegistry;
 import zmaster587.advancedRocketry.api.ARConfiguration;
 import zmaster587.advancedRocketry.api.DataStorage.DataType;
 import zmaster587.advancedRocketry.api.dimension.IDimensionProperties;
 import zmaster587.advancedRocketry.api.dimension.solar.StellarBody;
-import zmaster587.advancedRocketry.api.satellite.SatelliteBase;
 import zmaster587.advancedRocketry.api.stations.ISpaceObject;
 import zmaster587.advancedRocketry.dimension.DimensionManager;
 import zmaster587.advancedRocketry.dimension.DimensionProperties;
@@ -40,9 +38,6 @@ import zmaster587.advancedRocketry.stations.SpaceObjectManager;
 import zmaster587.advancedRocketry.unit.IngameTestOrchestrator;
 import zmaster587.advancedRocketry.world.util.TeleporterNoPortal;
 import zmaster587.advancedRocketry.world.util.TeleporterNoPortalSeekBlock;
-import zmaster587.advancedRocketry.api.satellite.SatelliteProperties;
-import zmaster587.advancedRocketry.item.ItemSatelliteIdentificationChip;
-import zmaster587.advancedRocketry.api.satellite.SatelliteBase;
 import zmaster587.libVulpes.network.PacketHandler;
 import zmaster587.libVulpes.util.HashedBlockPosition;
 
@@ -52,13 +47,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.BiConsumer;
 
 public class WorldCommand implements ICommand {
 
@@ -907,56 +899,6 @@ public class WorldCommand implements ICommand {
 		}
 	}
 	
-	private void commandSummonSatellite(ICommandSender sender, String[] cmdstring)
-	{
-		if(cmdstring.length < 2 || cmdstring[1].equalsIgnoreCase("help")) {
-			printSummonSatelliteHelp(sender);
-			return;
-		}
-		if(!(sender.getCommandSenderEntity() instanceof EntityPlayer)) {
-			sender.sendMessage(new TextComponentString("Only works on players. "));
-			return;
-		}
-		if(!WorldCommand.satelliteTypes.containsKey(cmdstring[2])) {
-			printSummonSatelliteSupported(sender);
-			return;
-		}
-		SatelliteProperties properties = WorldCommand.satelliteTypes.get(cmdstring[2]).copy();
-		SatelliteBase sat = SatelliteRegistry.getNewSatellite(WorldCommand.satelliteTypes.get(cmdstring[2]).getSatelliteType());
-		properties.setId(DimensionManager.getInstance().getNextSatelliteId());
-		sender.getCommandSenderEntity().inventory.addItemStackToInventory(sat.getControllerItemStack(new ItemStack(new ItemSatelliteIdentificationChip(), 1), properties));
-		sat.setDimensionId(sender.getEntityWorld().provider.getDimension());
-	}
-	
-	private void printSummonSatelliteHelp(ICommandSender sender)
-	{
-		sender.sendMessage(new TextComponentString("summonSatellite <satelliteType>"));
-		printSummonSatelliteSupported(sender);
-	}
-	
-	private void printSummonSatelliteSupported(ICommandSender sender)
-	{
-		sender.sendMessage(new TextComponentString("Supported satellite types:"));
-		ArrayList<String> satellites = new ArrayList<String>();
-		WorldCommand.satelliteTypes.forEach(new BiConsumer() {
-			public void accept(Object key, Object val)
-			{
-				satellites.add((String)key);
-			}
-		});
-		for(String name : satellites)
-		{
-			sender.sendMessage(new TextComponentString(name));
-		}
-	}
-	
-	static private HashMap<String, SatelliteProperties> satelliteTypes;
-	static public void registerSummonableSatellite(String name, SatelliteProperties properties) {
-		if(satelliteTypes == null)
-			satelliteTypes = new HashMap<String, SatelliteProperties>();
-		satelliteTypes.put(name, properties);
-	}
-	
 	@Override
 	@ParametersAreNonnullByDefault
 	public void execute(MinecraftServer server, ICommandSender sender, String[] string) {
@@ -974,7 +916,6 @@ public class WorldCommand implements ICommand {
 			sender.sendMessage(new TextComponentString("reloadRecipes"));
 			sender.sendMessage(new TextComponentString("setGravity"));
 			sender.sendMessage(new TextComponentString("addTorch"));
-			sender.sendMessage(new TextComponentString("summonSatellite"));
 			sender.sendMessage(new TextComponentString("[Enter /advRocketry <subcommand> help for more info]"));
 		}
 		
@@ -1015,9 +956,6 @@ public class WorldCommand implements ICommand {
 			break;
 		case "star":
 			commandStar(sender, string);
-			break;
-		case "summonSatellite":
-			commandSummonSatellite(sender, string);
 			break;
 		}
 	}

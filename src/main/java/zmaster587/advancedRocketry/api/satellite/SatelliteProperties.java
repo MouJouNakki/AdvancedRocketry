@@ -37,9 +37,6 @@ public class SatelliteProperties {
 		this.maxData = maxData;
 	}
 	
-	public SatelliteProperties copy() {
-		return new SatelliteProperties(powerGeneration, powerStorage, satType, maxData);
-	}
 
 
 	/**
