@@ -536,10 +536,7 @@ public class AdvancedRocketry {
 		SatelliteRegistry.registerSatelliteProperty(new ItemStack(LibVulpesItems.itemBattery, 1, 0), new SatelliteProperties().setPowerStorage(10000));
 		SatelliteRegistry.registerSatelliteProperty(new ItemStack(LibVulpesItems.itemBattery, 1, 1), new SatelliteProperties().setPowerStorage(40000));
 		SatelliteRegistry.registerSatelliteProperty(new ItemStack(AdvancedRocketryItems.itemDataUnit, 1, 0), new SatelliteProperties().setMaxData(1000));
-		// Register satellites for the summonSatellites command
-		WorldCommand.registerSummonableSatellite("distance", new SatelliteProperties(120, 720, SatelliteRegistry.getKey(SatelliteOptical.class), 3000));
-		WorldCommand.registerSummonableSatellite("mass", new SatelliteProperties(120, 720, SatelliteRegistry.getKey(SatelliteMassScanner.class), 3000));
-		WorldCommand.registerSummonableSatellite("composition", new SatelliteProperties(120, 720, SatelliteRegistry.getKey(SatelliteComposition.class), 3000));
+
 
 		//Item Registration
 		//Circuit pieces
