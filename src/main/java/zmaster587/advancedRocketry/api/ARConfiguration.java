@@ -457,8 +457,6 @@ public class ARConfiguration {
         //Missions
 		arConfig.asteroidMiningTimeMult = config.get(MISSION, "miningMissionTmeMultiplier", 1.0, "Multiplier changing how long a mining mission takes").getDouble();
 		arConfig.gasCollectionMult = config.get(MISSION, "gasMissionMultiplier", 1.0, "Multiplier for the amount of time gas collection missions take").getDouble();
-		arConfig.dataCollectionTimeMult = config.get(MISSION, "dataMissionTimeMultiplier", 1.0, "Multiplier for the amount of time collecting data from satellites using unmanned vehicles takes").getDouble();
-		arConfig.dataCollectionMult = config.get(MISSION, "dataMissionMultiplier", 1.0, "Multiplier for the amount of data collected from satellites using unmanned vehicles").getDouble();
 		harvestableGasses = config.getStringList("harvestableGasses", MISSION, new String[] {}, "list of fluid names that can be harvested as Gas from any gas giant");
 		spawnableGasses = config.getStringList("spawnableGasses", MISSION, new String[] {"hydrogen;125;1600;1.0", "helium;125;1600;0.9", "helium3;175;1600;0.2", "oxygen;0;124;1.0", "nitrogen;0;124;1.0", "ammonia;0;124;0.75", "methane;0;124;0.25"}, "list of fluid names that can be spawned as a gas giant. Format is fluid;minGravity;maxGravity;chance");
 
@@ -993,12 +991,6 @@ public class ARConfiguration {
 
 	@ConfigProperty
 	public double gasCollectionMult;
-	
-	@ConfigProperty
-	public double dataCollectionTimeMult;
-	
-	@ConfigProperty
-	public double dataCollectionMult;
 
 	@ConfigProperty
 	public int terraformingBlockSpeed;

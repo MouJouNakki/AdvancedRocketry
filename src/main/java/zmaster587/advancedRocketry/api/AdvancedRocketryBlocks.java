@@ -73,7 +73,6 @@ public class AdvancedRocketryBlocks {
 	public static Block blockBiomeScanner;
 	public static Block blockAtmosphereTerraformer;
 	public static Block blockDeployableRocketBuilder;
-	public static Block blockDataIntake;
 	public static Block blockPressureTank;
 	public static Block blockIntake;
 	public static Block blockNitrogenFluid;

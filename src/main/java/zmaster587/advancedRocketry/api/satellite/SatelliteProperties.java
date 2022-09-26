@@ -36,7 +36,6 @@ public class SatelliteProperties {
 		this.satType = satType;
 		this.maxData = maxData;
 	}
-	
 
 
 	/**

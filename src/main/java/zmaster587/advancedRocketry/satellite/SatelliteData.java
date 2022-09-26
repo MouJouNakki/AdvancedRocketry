@@ -66,10 +66,6 @@ public abstract class SatelliteData extends SatelliteBase {
 
 		return false;
 	}
-	
-	public DataStorage getDataObject() {
-		return data;
-	}
 
 	private int getDataCreated() {
 		//If collection time is somehow 0, fix it before it causes problems

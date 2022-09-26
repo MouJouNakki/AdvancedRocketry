@@ -93,7 +93,6 @@ tile.citrine.name=Yellow Crystal Block
 tile.wulfentite.name=Orange Crystal Block
 tile.amethyst.name=Violet Crystal Block
 tile.gravityControl.name=Station Gravity Controller
-tile.dataIntake.name=Data Intake
 tile.drill.name=Drill
 tile.dataPipe.name=Data Cable(Deprecated)
 tile.liquidPipe.name=Liquid Pipe(Deprecated)
@@ -221,7 +220,6 @@ fluid.enrichedLava=Enriched Lava
 
 mission.asteroidmining.name=Asteroid Mining
 mission.gascollection.name=Gas Collection
-mission.datacollection.name=Data Collection
 
 error.rocket.cannotGetThere=Destination Unreachable
 error.rocket.destinationNotExist=Cannot launch: Destination does not exist
@@ -481,8 +479,7 @@ msg.unprogrammed=Unprogrammed
 msg.programfail=Programming Failed
 msg.modules=modules
 msg.na=N/A
-msg.entityDeployedRocket.notGasGiant=Nothing to do
-msg.entityDeployedRocket.collectData=Data
+msg.entityDeployedRocket.notGasGiant=No Gas Here
 msg.noOxygen=Warning: Atmosphere lacks oxygen!
 msg.tooHot=Warning: Atmosphere too hot!
 msg.tooDense=Warning: Atmosphere pressure too high!
