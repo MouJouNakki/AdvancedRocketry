@@ -550,25 +550,53 @@ public class DimensionProperties implements Cloneable, IDimensionProperties {
 		
 		if(isAsteroid())
 			return PlanetIcons.ASTEROID.resource;
-
-		if(tempType == Temps.TOOHOT)
-			return PlanetIcons.MARSLIKE.resource;
-		if(atmType != AtmosphereTypes.NONE && VulpineMath.isBetween(tempType.ordinal(), Temps.COLD.ordinal(), Temps.TOOHOT.ordinal()))
-			return PlanetIcons.EARTHLIKE.resource;//TODO: humidity
-		else if(tempType.compareTo(Temps.COLD) > 0)
-			if(atmType.compareTo(AtmosphereTypes.LOW) > 0)
-				return PlanetIcons.MOON.resource;
-			else
-				return PlanetIcons.ICEWORLD.resource;
-		else if(atmType.compareTo(AtmosphereTypes.LOW) > 0) {
-
-			if(tempType.compareTo(Temps.COLD) < 0)
-				return PlanetIcons.MARSLIKE.resource;
-			else
-				return PlanetIcons.MOON.resource;
-		}
-		else
+		
+		if(atmType.denserThan(AtmosphereTypes.HIGHPRESSURE))
+			return PlanetIcons.VENUSIAN.resource;
+		
+		if(getOceanBlock() == Blocks.LAVA.getDefaultState())
 			return PlanetIcons.LAVA.resource;
+		
+		int otherBiomes = 0;
+		int hotBiomes = 0;
+		int coldBiomes = 0;
+		int oceanBiomes = 0;
+		int martianBiomes = 0;
+		int lunarBiomes = 0;
+		
+		for (Biome biome : getViableBiomes()) {
+			if (BiomeDictionary.getTypes(biome).contains(BiomeDictionary.Type.HOT)) {
+				hotBiomes++;
+				continue;
+			}
+			if (BiomeDictionary.getTypes(biome).contains(BiomeDictionary.Type.COLD)) {
+				coldBiomes++;
+				continue;
+			}
+			otherBiomes++;
+		}
+		
+		int highestBiomes = Math.max(Math.max(Math.max(otherBiomes, hotBiomes), coldBiomes), Math.max(Math.max(oceanBiomes, martianBiomes), lunarBiomes));
+		return PlanetIcons.EARTHLIKE.resource;
+		
+//		if(tempType == Temps.TOOHOT)
+//			return PlanetIcons.MARSLIKE.resource;
+//		if(atmType != AtmosphereTypes.NONE && VulpineMath.isBetween(tempType.ordinal(), Temps.COLD.ordinal(), Temps.TOOHOT.ordinal()))
+//			return PlanetIcons.EARTHLIKE.resource;//TODO: humidity
+//		else if(tempType.compareTo(Temps.COLD) > 0)
+//			if(atmType.compareTo(AtmosphereTypes.LOW) > 0)
+//				return PlanetIcons.MOON.resource;
+//			else
+//				return PlanetIcons.ICEWORLD.resource;
+//		else if(atmType.compareTo(AtmosphereTypes.LOW) > 0) {
+//
+//			if(tempType.compareTo(Temps.COLD) < 0)
+//				return PlanetIcons.MARSLIKE.resource;
+//			else
+//				return PlanetIcons.MOON.resource;
+//		}
+//		else
+//			return PlanetIcons.LAVA.resource;
 	}
 
 	/**
@@ -599,24 +627,24 @@ public class DimensionProperties implements Cloneable, IDimensionProperties {
 		if(isGasGiant())
 			return PlanetIcons.GASGIANTBLUE.resourceLEO;
 
-		if(tempType == Temps.TOOHOT)
-			return PlanetIcons.MARSLIKE.resourceLEO;
-		if(atmType != AtmosphereTypes.NONE && VulpineMath.isBetween(tempType.ordinal(), Temps.COLD.ordinal(), Temps.TOOHOT.ordinal()))
-			return PlanetIcons.EARTHLIKE.resourceLEO;//TODO: humidity
-		else if(tempType.compareTo(Temps.COLD) > 0)
-			if(atmType.compareTo(AtmosphereTypes.LOW) > 0)
-				return PlanetIcons.MOON.resourceLEO;
-			else
-				return PlanetIcons.ICEWORLD.resourceLEO;
-		else if(atmType.compareTo(AtmosphereTypes.LOW) > 0) {
-
-			if(tempType.compareTo(Temps.COLD) < 0)
-				return PlanetIcons.MARSLIKE.resourceLEO;
-			else
-				return PlanetIcons.MOON.resourceLEO;
-		}
-		else
-			return PlanetIcons.LAVA.resourceLEO;
+//		if(tempType == Temps.TOOHOT)
+//			return PlanetIcons.MARSLIKE.resourceLEO;
+//		if(atmType != AtmosphereTypes.NONE && VulpineMath.isBetween(tempType.ordinal(), Temps.COLD.ordinal(), Temps.TOOHOT.ordinal()))
+//			return PlanetIcons.EARTHLIKE.resourceLEO;//TODO: humidity
+//		else if(tempType.compareTo(Temps.COLD) > 0)
+//			if(atmType.compareTo(AtmosphereTypes.LOW) > 0)
+//				return PlanetIcons.MOON.resourceLEO;
+//			else
+//				return PlanetIcons.ICEWORLD.resourceLEO;
+//		else if(atmType.compareTo(AtmosphereTypes.LOW) > 0) {
+//
+//			if(tempType.compareTo(Temps.COLD) < 0)
+//				return PlanetIcons.MARSLIKE.resourceLEO;
+//			else
+//				return PlanetIcons.MOON.resourceLEO;
+//		}
+//		else
+//			return PlanetIcons.LAVA.resourceLEO;
 	}
 
 	/**
